@@ -21,7 +21,7 @@
 #include "../OsuSpinner.hpp"
 #include "../OsuTimingPoint.hpp"
 #include "../OsuVideoEvent.hpp"
-#include "Utility.hpp"
+#include "Utilities.hpp"
 
 namespace Osu {
     namespace _Detail {

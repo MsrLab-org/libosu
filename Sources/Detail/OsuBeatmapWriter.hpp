@@ -5,7 +5,7 @@
 #include <sstream>
 
 #include "../OsuBeatmap.hpp"
-#include "Utility.hpp"
+#include "Utilities.hpp"
 
 namespace Osu {
     namespace _Detail {

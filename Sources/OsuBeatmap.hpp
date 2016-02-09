@@ -8,13 +8,12 @@
 #include <memory>
 #include <vector>
 
+#include "OsuEvent.hpp"
 #include "OsuGameMode.hpp"
+#include "OsuHitObject.hpp"
+#include "OsuTimingPoint.hpp"
 
 namespace Osu {
-
-    class OsuEvent;
-    struct OsuTimingPoint;
-    class OsuHitObject;
 
     class OsuBeatmap {
     public:
