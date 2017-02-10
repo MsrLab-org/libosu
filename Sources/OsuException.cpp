@@ -5,10 +5,10 @@
 namespace Osu {
 
     OsuException::OsuException(const std::string &description)
-    : Desc(description) {}
+    : _Description(description) {}
 
     const std::string &OsuException::Description() const {
-        return Desc;
+        return _Description;
     }
 
 }

@@ -29,7 +29,7 @@ namespace Osu {
         struct OsuBeatmapReader {
         private:
             std::pair<std::string, std::string> ParsePropertyLine(const std::string &line) {
-                auto index = line.find_first_of(':');
+                size_t index = line.find_first_of(':');
                 auto key = line.substr(0, index);
                 ++index;
                 while (line[index] == ' ') {
@@ -55,7 +55,7 @@ namespace Osu {
                     ret.push_back(line.substr(last, id - last));
                     last = id + 1;
                 }
-                return std::move(ret);
+                return ret;
             }
             std::string RemoveQuotes(const std::string &str) {
                 if (str.size() >= 2 && str[0] == '"') {
@@ -96,47 +96,6 @@ namespace Osu {
                 };
                 return sections[str];
             }
-            template <class T>
-            T To(const std::string &str) {
-                std::stringstream ss;
-                ss << str;
-                T ret;
-                ss >> ret;
-                return ret;
-            }
-            intmax_t ToIntMax(const std::string &str) {
-                return To<intmax_t>(str);
-            }
-            uintmax_t ToUIntMax(const std::string &str) {
-                return To<uintmax_t>(str);
-            }
-            double ToDouble(const std::string &str) {
-                return To<double>(str);
-            }
-            int8_t ToInt8(const std::string &str) {
-                return static_cast<int8_t>(ToIntMax(str));
-            }
-            int16_t ToInt16(const std::string &str) {
-                return static_cast<int16_t>(ToIntMax(str));
-            }
-            int32_t ToInt32(const std::string &str) {
-                return static_cast<int32_t>(ToIntMax(str));
-            }
-            uint8_t ToUInt8(const std::string &str) {
-                return static_cast<uint8_t>(ToUIntMax(str));
-            }
-            uint16_t ToUInt16(const std::string &str) {
-                return static_cast<uint16_t>(ToUIntMax(str));
-            }
-            uint32_t ToUInt32(const std::string &str) {
-                return static_cast<uint32_t>(ToUIntMax(str));
-            }
-            bool ToBool(const std::string &str) {
-                return ToUIntMax(str) != 0;
-            }
-            char ToChar(const std::string &str) {
-                return str.front();
-            }
         private:
             uint16_t format = 12;
         public:
@@ -144,7 +103,7 @@ namespace Osu {
                 using namespace std;
                 beatmap = OsuBeatmap();
                 bool success = true;
-                string description = string(LIBOSU_FUNCTION_SIGNATURE) + "Unknown Error";
+                string description = string("in ") + LIBOSU_FUNCTION_SIGNATURE + ": ";
                 string line;
                 Section section = FileFormat;
                 while (getline(in, line)) {
@@ -187,7 +146,7 @@ namespace Osu {
                             beatmap.WidescreenStoryboard = ToBool(value);
                         } else {
                             success = false;
-                            description = "[General] Unknown key " + key;
+                            description += "[General] Unknown key " + key;
                         }
                         break;
                     case Editor:
@@ -209,7 +168,7 @@ namespace Osu {
                             beatmap.TimelineZoom = ToDouble(value);
                         } else {
                             success = false;
-                            description = "[Editor] Unknown key " + key;
+                            description += "[Editor] Unknown key " + key;
                         }
                         break;
                     case Metadata:
@@ -238,7 +197,7 @@ namespace Osu {
                             beatmap.BeatmapSetId = ToUInt32(value);
                         } else {
                             success = false;
-                            description = "[Metadata] Unknown key " + key;
+                            description += "[Metadata] Unknown key " + key;
                         }
                         break;
                     case Difficulty:
@@ -259,7 +218,7 @@ namespace Osu {
                             beatmap.SliderTickRate = ToDouble(value);
                         } else {
                             success = false;
-                            description = "[Difficulty] Unknown key " + key;
+                            description += "[Difficulty] Unknown key " + key;
                         }
                         break;
                     case Events: {
@@ -267,14 +226,14 @@ namespace Osu {
                         auto strs = ParseSymbolSeparatedStringSequence(line, ',');
                         if (strs.size() < 1) {
                             success = false;
-                            description = "[Events] Syntax error";
+                            description += "[Events] Syntax error";
                             break;
                         }
                         std::shared_ptr<OsuEvent> newEvent;
                         if (strs[0] == "Sample") {
                             if (strs.size() != 5) {
                                 success = false;
-                                description = "[Events] Sound effect: Syntax error";
+                                description += "[Events] Sound effect: Syntax error";
                                 break;
                             }
                             auto event = make_shared<OsuSoundEffectEvent>();
@@ -286,7 +245,7 @@ namespace Osu {
                         } else if (strs[0] == "Video") {
                             if (strs.size() != 3) {
                                 success = false;
-                                description = "[Events] Video: Syntax error";
+                                description += "[Events] Video: Syntax error";
                                 break;
                             }
                             auto event = make_shared<OsuVideoEvent>();
@@ -296,7 +255,7 @@ namespace Osu {
                         } else if (strs[0] == "0") {
                             if (strs.size() != 5) {
                                 success = false;
-                                description = "[Events] Background: Syntax error";
+                                description += "[Events] Background: Syntax error";
                                 break;
                             }
                             auto event = make_shared<OsuBackgroundEvent>();
@@ -312,7 +271,7 @@ namespace Osu {
                         auto strs = ParseSymbolSeparatedStringSequence(line, ',');
                         if (strs.size() != 8) {
                             success = false;
-                            description = "[TimingPoints] Syntax error";
+                            description += "[TimingPoints] Syntax error";
                             break;
                         }
                         OsuTimingPoint tp;
@@ -334,7 +293,7 @@ namespace Osu {
                         auto strs = ParseSymbolSeparatedStringSequence(line, ',');
                         if (strs.size() < 4) {
                             success = false;
-                            description = "[HitObjects] Syntax error";
+                            description += "[HitObjects] Syntax error";
                             break;
                         }
                         uint8_t type = ToUInt8(strs[3]);
@@ -381,7 +340,7 @@ namespace Osu {
                         }
                         default:
                             success = false;
-                            description = "[HitObjects] Unknown HitObject type: "
+                            description += "[HitObjects] Unknown HitObject type: "
                                 + to_string(_Detail::PromoteToPrintableIntegerType(type));
                             break;
                         }
@@ -390,12 +349,16 @@ namespace Osu {
                         object->StartPoint.HitSound = static_cast<OsuHitSound>(ToUInt8(strs[4]));
                         object->StartTime = ToInt32(strs[2]);
                         object->NewCombo = (type & 4) != 0;
-                        if (additions.back() != "0") {
+                        if (additions.back() != "0" && additions.back() != "") {
                             object->StartPoint.CustomHitSound = make_shared<string>(additions.back());
                         }
                         beatmap.HitObjects.push_back(object);
                         break;
                     }
+                    default:
+                        success = false;
+                        description += "Unknown section";
+                        break;
                     }
                     if (!success) {
                         break;

@@ -11,7 +11,6 @@ namespace Osu {
     namespace _Detail {
 
         struct OsuBeatmapWriter {
-        private:
         public:
             std::ostream &operator()(std::ostream &out, const OsuBeatmap &beatmap) throw(OsuException) {
                 using namespace std;

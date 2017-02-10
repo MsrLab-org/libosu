@@ -12,7 +12,7 @@ namespace Osu {
     public:
         const std::string &Description() const;
     private:
-        std::string Desc;
+        std::string _Description;
     };
 
 }

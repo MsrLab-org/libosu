@@ -4,7 +4,7 @@
 #include <sstream>
 #include <string>
 
-#include "Detail/Utilities.hpp"
+#include "_Detail/Utilities.hpp"
 
 namespace Osu {
 

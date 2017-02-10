@@ -3,8 +3,8 @@
 #include <cstdint>
 #include <iostream>
 
-#include "Detail/OsuBeatmapReader.hpp"
-#include "Detail/OsuBeatmapWriter.hpp"
+#include "_Detail/OsuBeatmapReader.hpp"
+#include "_Detail/OsuBeatmapWriter.hpp"
 
 namespace Osu {
 
